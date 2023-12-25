@@ -9,28 +9,24 @@ import (
 	"time"
 )
 
-const (
-	height = 120
-	width  = 160
-)
-
 var (
-	myColBlack = color.Black
-	myColGray  = color.Gray16{0x7fff}
-	myColWhite = color.White
-	myPalette  = []color.Color{
-		myColBlack,
-		myColGray,
-		myColWhite,
+	myColForOne     = color.White
+	myColForPadding = color.Gray16{0x7fff}
+	myColForZero    = color.Black
+	myPalette       = []color.Color{
+		myColForOne,
+		myColForPadding,
+		myColForZero,
 	}
-	/*
-		myPalIdxBlack = 0
-		myPalIdxGray  = 1
-		myPalIdxWhite = 2
-	*/
 )
 
 func main() {
+	size, err := resBySize(37000)
+	if err != nil {
+		panic(err)
+	}
+	height := size.Height
+	width := size.Width
 	img := image.NewPaletted(
 		image.Rect(
 			0, 0, // xMin, yMin
