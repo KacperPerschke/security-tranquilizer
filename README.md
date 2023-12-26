@@ -3,7 +3,7 @@
 ## Context
 Imagine that the security department at your job is, to put it mildly, averagely bright.
 
-- They prevent logging in to Google and github.
+- They prevent logging in to Google and GitHub.
 - If they find a fragment of code in an e-mail, they can keep the e-mail for a few days and demand an explanation why the e-mail containing the source code was sent.
 - They pass images even if you report that the email looks suspicious.
 
