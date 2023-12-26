@@ -10,12 +10,12 @@ import (
 )
 
 var (
+	myColForEndStop = color.Gray16{0x7fff}
 	myColForOne     = color.White
-	myColForPadding = color.Gray16{0x7fff}
 	myColForZero    = color.Black
 	myPalette       = []color.Color{
+		myColForEndStop,
 		myColForOne,
-		myColForPadding,
 		myColForZero,
 	}
 )
