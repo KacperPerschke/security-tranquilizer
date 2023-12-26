@@ -14,14 +14,18 @@ You have come up with a _part of the solution_, tested it on your private comput
 **How to do this** in the situation described above? 
 
 ## Solution
-1. Use this program to encode your content in the form of image.
+1. Use this program to encode your content in the form of an image.
 1. Send image by e-mail.
-1. Use this program to decode content from an image.
+1. Use this program to decode content from the image.
 
-## Technical note
-At the moment program does not encode/decode anything!
-
-### The roadmap
+## The roadmap
+1. [✓] Learning from mistakes.
+1. [✓] Create a repo on GitHub.
+1. [✓] Combine the effects of previous work with the established repo.
 1. [Is it done?] Apply "github.com/spf13/cobra"
-1. [Is it done?] Be able to encode.
-1. [Is it done?] Be able to decode.
+1. [Is it done?] One file.
+    1. [Is it done?] Be able to encode one file.
+    1. [Is it done?] Be able to decode one file.
+1. [Is it done?] Many files.
+    1. [Is it done?] Be able to encode many files.
+    1. [Is it done?] Be able to decode many files.
