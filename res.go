@@ -1,331 +1,285 @@
 package main
 
-import "errors"
+import (
+	"cmp"
+	"errors"
+	"slices"
+)
 
-// cds is a container for excerpt from https://en.wikipedia.org/wiki/Computer_display_standard
-type cds struct {
-	Width    int
-	Height   int
-	Capacity int
+// CDS is a container for excerpt from https://en.wikipedia.org/wiki/Computer_display_standard
+type CDS struct {
+	Width  int
+	Height int
 }
 
-var prefSizes = []cds{
-	cds{
-		Width:    160,
-		Height:   120,
-		Capacity: 19200,
+func (ss CDS) Capacity() int {
+	return ss.Width * ss.Height
+}
+
+func (ss CDS) WillAccommodate(cap int) bool {
+	return ss.Capacity() > cap
+}
+
+var prefSizes = []CDS{
+	CDS{
+		Width:  160,
+		Height: 120,
 	},
-	cds{
-		Width:    160,
-		Height:   128,
-		Capacity: 20480,
+	CDS{
+		Width:  160,
+		Height: 128,
 	},
-	cds{
-		Width:    160,
-		Height:   144,
-		Capacity: 23040,
+	CDS{
+		Width:  160,
+		Height: 144,
 	},
-	cds{
-		Width:    240,
-		Height:   160,
-		Capacity: 38400,
+	CDS{
+		Width:  240,
+		Height: 160,
 	},
-	cds{
-		Width:    320,
-		Height:   240,
-		Capacity: 76800,
+	CDS{
+		Width:  320,
+		Height: 240,
 	},
-	cds{
-		Width:    640,
-		Height:   200,
-		Capacity: 128000,
+	CDS{
+		Width:  640,
+		Height: 200,
 	},
-	cds{
-		Width:    480,
-		Height:   272,
-		Capacity: 130560,
+	CDS{
+		Width:  480,
+		Height: 272,
 	},
-	cds{
-		Width:    640,
-		Height:   256,
-		Capacity: 163840,
+	CDS{
+		Width:  640,
+		Height: 256,
 	},
-	cds{
-		Width:    512,
-		Height:   342,
-		Capacity: 175104,
+	CDS{
+		Width:  512,
+		Height: 342,
 	},
-	cds{
-		Width:    640,
-		Height:   350,
-		Capacity: 224000,
+	CDS{
+		Width:  640,
+		Height: 350,
 	},
-	cds{
-		Width:    720,
-		Height:   348,
-		Capacity: 250560,
+	CDS{
+		Width:  720,
+		Height: 348,
 	},
-	cds{
-		Width:    720,
-		Height:   350,
-		Capacity: 252000,
+	CDS{
+		Width:  720,
+		Height: 350,
 	},
-	cds{
-		Width:    640,
-		Height:   400,
-		Capacity: 256000,
+	CDS{
+		Width:  640,
+		Height: 400,
 	},
-	cds{
-		Width:    640,
-		Height:   480,
-		Capacity: 307200,
+	CDS{
+		Width:  640,
+		Height: 480,
 	},
-	cds{
-		Width:    720,
-		Height:   480,
-		Capacity: 345600,
+	CDS{
+		Width:  720,
+		Height: 480,
 	},
-	cds{
-		Width:    1024,
-		Height:   768,
-		Capacity: 786432,
+	CDS{
+		Width:  1024,
+		Height: 768,
 	},
-	cds{
-		Width:    1280,
-		Height:   720,
-		Capacity: 921600,
+	CDS{
+		Width:  1280,
+		Height: 720,
 	},
-	cds{
-		Width:    1152,
-		Height:   864,
-		Capacity: 995328,
+	CDS{
+		Width:  1152,
+		Height: 864,
 	},
-	cds{
-		Width:    1366,
-		Height:   768,
-		Capacity: 1049088,
+	CDS{
+		Width:  1366,
+		Height: 768,
 	},
-	cds{
-		Width:    1280,
-		Height:   960,
-		Capacity: 1228800,
+	CDS{
+		Width:  1280,
+		Height: 960,
 	},
-	cds{
-		Width:    1440,
-		Height:   900,
-		Capacity: 1296000,
+	CDS{
+		Width:  1440,
+		Height: 900,
 	},
-	cds{
-		Width:    1600,
-		Height:   900,
-		Capacity: 1440000,
+	CDS{
+		Width:  1600,
+		Height: 900,
 	},
-	cds{
-		Width:    1400,
-		Height:   1050,
-		Capacity: 1470000,
+	CDS{
+		Width:  1400,
+		Height: 1050,
 	},
-	cds{
-		Width:    1680,
-		Height:   1050,
-		Capacity: 1764000,
+	CDS{
+		Width:  1680,
+		Height: 1050,
 	},
-	cds{
-		Width:    1600,
-		Height:   1200,
-		Capacity: 1920000,
+	CDS{
+		Width:  1600,
+		Height: 1200,
 	},
-	cds{
-		Width:    1920,
-		Height:   1080,
-		Capacity: 2073600,
+	CDS{
+		Width:  1920,
+		Height: 1080,
 	},
-	cds{
-		Width:    2048,
-		Height:   1080,
-		Capacity: 2211840,
+	CDS{
+		Width:  2048,
+		Height: 1080,
 	},
-	cds{
-		Width:    1920,
-		Height:   1200,
-		Capacity: 2304000,
+	CDS{
+		Width:  1920,
+		Height: 1200,
 	},
-	cds{
-		Width:    2048,
-		Height:   1152,
-		Capacity: 2359296,
+	CDS{
+		Width:  2048,
+		Height: 1152,
 	},
-	cds{
-		Width:    1920,
-		Height:   1280,
-		Capacity: 2457600,
+	CDS{
+		Width:  1920,
+		Height: 1280,
 	},
-	cds{
-		Width:    1920,
-		Height:   1440,
-		Capacity: 2764800,
+	CDS{
+		Width:  1920,
+		Height: 1440,
 	},
-	cds{
-		Width:    2160,
-		Height:   1440,
-		Capacity: 3110400,
+	CDS{
+		Width:  2160,
+		Height: 1440,
 	},
-	cds{
-		Width:    2048,
-		Height:   1536,
-		Capacity: 3145728,
+	CDS{
+		Width:  2048,
+		Height: 1536,
 	},
-	cds{
-		Width:    2560,
-		Height:   1440,
-		Capacity: 3686400,
+	CDS{
+		Width:  2560,
+		Height: 1440,
 	},
-	cds{
-		Width:    2560,
-		Height:   1600,
-		Capacity: 4096000,
+	CDS{
+		Width:  2560,
+		Height: 1600,
 	},
-	cds{
-		Width:    2880,
-		Height:   1440,
-		Capacity: 4147200,
+	CDS{
+		Width:  2880,
+		Height: 1440,
 	},
-	cds{
-		Width:    2960,
-		Height:   1440,
-		Capacity: 4262400,
+	CDS{
+		Width:  2960,
+		Height: 1440,
 	},
-	cds{
-		Width:    3440,
-		Height:   1440,
-		Capacity: 4953600,
+	CDS{
+		Width:  3440,
+		Height: 1440,
 	},
-	cds{
-		Width:    2736,
-		Height:   1824,
-		Capacity: 4990464,
+	CDS{
+		Width:  2736,
+		Height: 1824,
 	},
-	cds{
-		Width:    2880,
-		Height:   1800,
-		Capacity: 5184000,
+	CDS{
+		Width:  2880,
+		Height: 1800,
 	},
-	cds{
-		Width:    2560,
-		Height:   2048,
-		Capacity: 5242880,
+	CDS{
+		Width:  2560,
+		Height: 2048,
 	},
-	cds{
-		Width:    3024,
-		Height:   1964,
-		Capacity: 5939136,
+	CDS{
+		Width:  3024,
+		Height: 1964,
 	},
-	cds{
-		Width:    3000,
-		Height:   2000,
-		Capacity: 6000000,
+	CDS{
+		Width:  3000,
+		Height: 2000,
 	},
-	cds{
-		Width:    3840,
-		Height:   1600,
-		Capacity: 6144000,
+	CDS{
+		Width:  3840,
+		Height: 1600,
 	},
-	cds{
-		Width:    3200,
-		Height:   2048,
-		Capacity: 6553600,
+	CDS{
+		Width:  3200,
+		Height: 2048,
 	},
-	cds{
-		Width:    3200,
-		Height:   2400,
-		Capacity: 7680000,
+	CDS{
+		Width:  3200,
+		Height: 2400,
 	},
-	cds{
-		Width:    3456,
-		Height:   2234,
-		Capacity: 7720704,
+	CDS{
+		Width:  3456,
+		Height: 2234,
 	},
-	cds{
-		Width:    3840,
-		Height:   2160,
-		Capacity: 8294400,
+	CDS{
+		Width:  3840,
+		Height: 2160,
 	},
-	cds{
-		Width:    4096,
-		Height:   2160,
-		Capacity: 8847360,
+	CDS{
+		Width:  4096,
+		Height: 2160,
 	},
-	cds{
-		Width:    5120,
-		Height:   2160,
-		Capacity: 11059200,
+	CDS{
+		Width:  5120,
+		Height: 2160,
 	},
-	cds{
-		Width:    4096,
-		Height:   3072,
-		Capacity: 12582912,
+	CDS{
+		Width:  4096,
+		Height: 3072,
 	},
-	cds{
-		Width:    4500,
-		Height:   3000,
-		Capacity: 13500000,
+	CDS{
+		Width:  4500,
+		Height: 3000,
 	},
-	cds{
-		Width:    5120,
-		Height:   2880,
-		Capacity: 14745600,
+	CDS{
+		Width:  5120,
+		Height: 2880,
 	},
-	cds{
-		Width:    5120,
-		Height:   3200,
-		Capacity: 16384000,
+	CDS{
+		Width:  5120,
+		Height: 3200,
 	},
-	cds{
-		Width:    5120,
-		Height:   4096,
-		Capacity: 20971520,
+	CDS{
+		Width:  5120,
+		Height: 4096,
 	},
-	cds{
-		Width:    7680,
-		Height:   3200,
-		Capacity: 24576000,
+	CDS{
+		Width:  7680,
+		Height: 3200,
 	},
-	cds{
-		Width:    6400,
-		Height:   4096,
-		Capacity: 26214400,
+	CDS{
+		Width:  6400,
+		Height: 4096,
 	},
-	cds{
-		Width:    6400,
-		Height:   4800,
-		Capacity: 30720000,
+	CDS{
+		Width:  6400,
+		Height: 4800,
 	},
-	cds{
-		Width:    7680,
-		Height:   4320,
-		Capacity: 33177600,
+	CDS{
+		Width:  7680,
+		Height: 4320,
 	},
-	cds{
-		Width:    7680,
-		Height:   4800,
-		Capacity: 36864000,
+	CDS{
+		Width:  7680,
+		Height: 4800,
 	},
-	cds{
-		Width:    10240,
-		Height:   4320,
-		Capacity: 44236800,
+	CDS{
+		Width:  10240,
+		Height: 4320,
 	},
 }
 
 // resBySize the function finds the smallest element in the prefSizes
-// providing `Capacity` greater than `expected`.
-// The search method assumes that the `prefSizes` is sorted
-// by the contents of the `Capacity` key.
-func resBySize(expected int) (cds, error) {
+// providing Capacity greater than expected.
+func resBySize(expected int) (CDS, error) {
+	slices.SortFunc(
+		prefSizes,
+		func(a, b CDS) int {
+			return cmp.Compare(a.Capacity(), b.Capacity())
+		},
+	)
 	for _, e := range prefSizes {
-		if e.Capacity >= expected {
+		if e.WillAccommodate(expected) {
 			return e, nil
 		}
 	}
-	return cds{}, errors.New("haven't found meeting preffered size")
+	return CDS{}, errors.New("haven't found meeting preffered size")
 }
