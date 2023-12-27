@@ -1,4 +1,4 @@
-package main
+package img
 
 import (
 	"cmp"
@@ -267,15 +267,15 @@ var prefSizes = []CDS{
 	},
 }
 
-// resBySize the function finds the smallest element in the prefSizes
-// providing Capacity greater than expected.
+// resBySize returns the smallest element in the prefSizes providing Capacity
+// that accomodate expected number of bytes.
 func resBySize(expected int) (CDS, error) {
-	slices.SortFunc(
-		prefSizes,
-		func(a, b CDS) int {
-			return cmp.Compare(a.Capacity(), b.Capacity())
-		},
-	)
+	areTwoCDSItemsInOrder := func(a, b CDS) int {
+		return cmp.Compare(a.Capacity(), b.Capacity())
+	}
+	if !slices.IsSortedFunc(prefSizes, areTwoCDSItemsInOrder) {
+		slices.SortFunc(prefSizes, areTwoCDSItemsInOrder)
+	}
 	for _, e := range prefSizes {
 		if e.WillAccommodate(expected) {
 			return e, nil
