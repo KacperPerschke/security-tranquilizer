@@ -24,6 +24,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&outFileName, "output", "", "name of output file (there is no default value; you must supply sth)")
-	rootCmd.MarkPersistentFlagRequired("output")
+	// Reminder — here you can define your flags and configuration settings.
 }

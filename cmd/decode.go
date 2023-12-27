@@ -20,5 +20,6 @@ var decodeCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(decodeCmd)
+	addOutputFlag(decodeCmd)
 	// Reminder — here you can define your flags and configuration settings.
 }

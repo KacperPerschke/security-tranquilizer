@@ -1,11 +1,24 @@
 package cmd
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/spf13/cobra"
+)
+
+const (
+	stringZeroVal = ``
+)
 
 var (
 	errTooFewArgs  = errors.New("You haven't provided a single argument.")
 	errTooManyArgs = errors.New("You haven provided too many arguments.")
 )
+
+func addOutputFlag(c *cobra.Command) {
+	c.Flags().StringVar(&outFileName, "output", "", "name of output file (there is no default value; you must supply sth)")
+	c.MarkFlagRequired("output")
+}
 
 func checkArgsCount(a []string) error {
 	l := len(a)
@@ -17,4 +30,12 @@ func checkArgsCount(a []string) error {
 	default:
 		return nil
 	}
+}
+
+func getOutFileName(c *cobra.Command) (string, error) {
+	outFileName, err := c.Flags().GetString("output")
+	if err != nil {
+		return stringZeroVal, err
+	}
+	return outFileName, nil
 }

@@ -24,7 +24,7 @@ You have come up with a _part of the solution_, tested it on your private comput
 1. [✓] Combine the effects of previous work with the established repo.
 1. [✓] Apply "github.com/spf13/cobra"
 1. [Is it done?] One file.
-    1. [Is it done?] Be able to encode one file.
+    1. [Probably] Be able to encode one file.
     1. [Is it done?] Be able to decode one file.
 1. [Is it done?] Many files.
     1. [Is it done?] Be able to encode many files.

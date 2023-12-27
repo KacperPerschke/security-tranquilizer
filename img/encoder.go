@@ -3,9 +3,10 @@ package img
 import (
 	"fmt"
 	"image"
+	"image/color"
 )
 
-func encoder(stream []bytes) (image.Gray, error) {
+func Encoder(stream []byte) (*image.Gray, error) {
 	emptyImage := image.NewGray(image.Rect(0, 0, 0, 0))
 	sLength := len(stream)
 
@@ -22,29 +23,30 @@ func encoder(stream []bytes) (image.Gray, error) {
 	)
 
 	paddingVal := fillerContent(stream)
-	calcPixValToSet := func(x, y) (byte, error) {
+	calcPixColToSet := func(x, y int) (color.Gray, error) {
 		sIdx, err := imgXYToSlicePos(x, y, img)
 		if err != nil {
-			return intZeroVal, err
+			return castByteToGray(0), err
 		}
 		if sIdx < sLength {
-			return stream[sIdx], nil
+			return castByteToGray(stream[sIdx]), nil
 		}
-		return paddingVal, nil
+		return castByteToGray(paddingVal), nil
 	}
 	for x := 0; x <= size.Width; x++ {
 		for y := 0; y <= size.Height; y++ {
-			colToSet, err := calcPixValToSet(x, y)
+			colToSet, err := calcPixColToSet(x, y)
 			if err != nil {
 				return emptyImage, err
 			}
-			img.SetColorIndex(x, y, colToSet)
+			img.SetGray(x, y, colToSet)
 		}
 	}
 	return img, nil
-	/*
-		f, _ := os.Create("image.png")
-		defer f.Close()
-		png.Encode(f, img)
-	*/
+}
+
+func castByteToGray(b byte) color.Gray {
+	return color.Gray{
+		Y: b,
+	}
 }

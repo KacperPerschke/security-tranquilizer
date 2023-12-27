@@ -1,6 +1,9 @@
 package img
 
-import "fmt"
+import (
+	"fmt"
+	"image"
+)
 
 const (
 	intZeroVal = 0
@@ -8,7 +11,7 @@ const (
 	paddingETX = 3 // https://en.wikipedia.org/wiki/End-of-Text_character
 )
 
-func imgXYToSlicePos(x, y int, img any) (int, error) {
+func imgXYToSlicePos(x, y int, img *image.Gray) (int, error) {
 	bBox := img.Rect
 	fmtBBoxForError := func() string {
 		return fmt.Sprintf(
@@ -41,7 +44,7 @@ func imgXYToSlicePos(x, y int, img any) (int, error) {
 
 // fillerContent task is to provide a value that did not appear
 // in the last byte of the stream.
-func fillerContent(s []bytes) {
+func fillerContent(s []byte) byte {
 	lastByte := s[len(s)-1]
 	if lastByte != paddingEOT {
 		return paddingEOT
