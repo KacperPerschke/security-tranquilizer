@@ -6,46 +6,38 @@ import (
 	"image/color"
 )
 
-func Encoder(stream []byte) (*image.Gray, error) {
-	emptyImage := image.NewGray(image.Rect(0, 0, 0, 0))
+func PackToImg(stream []byte) (*image.Gray, error) {
 	sLength := len(stream)
 
-	size, err := resBySize(sLength)
+	rect, err := resBySize(sLength)
 	if err != nil {
 		return emptyImage, fmt.Errorf("problem while guessing suitable image size: %w", err)
 	}
+	img := image.NewGray(rect)
 
-	img := image.NewGray(
-		image.Rect(
-			0, 0, // xMin, yMin
-			size.Width, size.Height, // xMax, yMax
-		),
-	)
+	// fmt.Printf("Stride=%4d\n", img.Stride)
+	// fmt.Printf("BB=%#q\n", img.Bounds())
 
 	paddingVal := fillerContent(stream)
-	calcPixColToSet := func(x, y int) (color.Gray, error) {
-		sIdx, err := imgXYToSlicePos(x, y, img)
-		if err != nil {
-			return castByteToGray(0), err
-		}
+	calcPixColToSet := func(x, y int) color.Gray {
+		sIdx := imgXYToSlicePos(x, y, img)
 		if sIdx < sLength {
-			return castByteToGray(stream[sIdx]), nil
+			return newGray(stream[sIdx])
 		}
-		return castByteToGray(paddingVal), nil
+		return newGray(paddingVal)
 	}
-	for x := 0; x <= size.Width; x++ {
-		for y := 0; y <= size.Height; y++ {
-			colToSet, err := calcPixColToSet(x, y)
-			if err != nil {
-				return emptyImage, err
-			}
+	b := img.Bounds()
+	for x := b.Min.X; x < b.Max.X; x++ {
+		for y := b.Min.Y; y < b.Max.Y; y++ {
+			colToSet := calcPixColToSet(x, y)
+			// fmt.Printf("enc: x=%4d, y=%4d, c=%3d i.e. %c\n", x, y, colToSet.Y, colToSet.Y)
 			img.SetGray(x, y, colToSet)
 		}
 	}
 	return img, nil
 }
 
-func castByteToGray(b byte) color.Gray {
+func newGray(b byte) color.Gray {
 	return color.Gray{
 		Y: b,
 	}

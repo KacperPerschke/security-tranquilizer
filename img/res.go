@@ -3,6 +3,7 @@ package img
 import (
 	"cmp"
 	"errors"
+	"image"
 	"slices"
 )
 
@@ -16,11 +17,45 @@ func (ss CDS) Capacity() int {
 	return ss.Width * ss.Height
 }
 
+// rectangle returns a ready-made rectangle with the dimensions from ss.
+// It must subtract one from the width and height because
+// the pixel coordinates are indexed from zero.
+func (ss CDS) rectangle() image.Rectangle {
+	upLeft := image.Point{
+		X: 0,
+		Y: 0,
+	}
+	lowRight := image.Point{
+		X: ss.Width,
+		Y: ss.Height,
+	}
+	return image.Rectangle{
+		Min: upLeft,
+		Max: lowRight,
+	}
+}
+
 func (ss CDS) WillAccommodate(cap int) bool {
 	return ss.Capacity() > cap
 }
 
 var prefSizes = []CDS{
+	CDS{ // for tests
+		Width:  2,
+		Height: 1,
+	},
+	CDS{ // for tests
+		Width:  8,
+		Height: 4,
+	},
+	CDS{ // for tests
+		Width:  32,
+		Height: 16,
+	},
+	CDS{ // for tests
+		Width:  128,
+		Height: 64,
+	},
 	CDS{
 		Width:  160,
 		Height: 120,
@@ -267,9 +302,9 @@ var prefSizes = []CDS{
 	},
 }
 
-// resBySize returns the smallest element in the prefSizes providing Capacity
-// that accomodate expected number of bytes.
-func resBySize(expected int) (CDS, error) {
+// resBySize returns the smallest image.Rectangle of size among prefSizes
+// providing Capacity that accomodate expected number of bytes.
+func resBySize(expected int) (image.Rectangle, error) {
 	areTwoCDSItemsInOrder := func(a, b CDS) int {
 		return cmp.Compare(a.Capacity(), b.Capacity())
 	}
@@ -278,8 +313,8 @@ func resBySize(expected int) (CDS, error) {
 	}
 	for _, e := range prefSizes {
 		if e.WillAccommodate(expected) {
-			return e, nil
+			return e.rectangle(), nil
 		}
 	}
-	return CDS{}, errors.New("haven't found meeting preffered size")
+	return emptyRectangle, errors.New("haven't found meeting preffered size")
 }

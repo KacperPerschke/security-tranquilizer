@@ -18,8 +18,7 @@ var encodeCmd = &cobra.Command{
 		return checkArgsCount(args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-
-		err := encodeFileToPng(cmd, args)
+		err := encodeFileToPNG(cmd, args)
 		if err != nil {
 			fmt.Printf("\nThere was an error while encoding: %q\n\n", err)
 			os.Exit(1)
@@ -33,7 +32,7 @@ func init() {
 	// Reminder — here you can define your flags and configuration settings.
 }
 
-func encodeFileToPng(c *cobra.Command, args []string) error {
+func encodeFileToPNG(c *cobra.Command, args []string) error {
 	iFName := args[0]
 	oFName, err := getOutFileName(c)
 	if err != nil {
@@ -45,10 +44,11 @@ func encodeFileToPng(c *cobra.Command, args []string) error {
 		return fmt.Errorf("Problem during attempt to read file '%s': %w", iFName, err)
 	}
 
-	img, err := img.Encoder(b)
+	img, err := img.PackToImg(b)
 	if err != nil {
 		return err
 	}
+
 	oHandle, err := os.OpenFile(oFName, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
 	if err != nil {
 		return fmt.Errorf("Problem during attempt to open file '%s' for writing: %w", oFName, err)
