@@ -14,29 +14,26 @@ func UnpackFromImg(i *image.Gray) ([]byte, error) {
 	if err != nil {
 		return emptyStream, fmt.Errorf("problem during calclulating padding: %w", err)
 	}
-	// fmt.Printf("xLast=%4d, yLast=%4d\n", xLast, yLast)
 	haveReachedLastPix := func(x, y int) bool {
 		return x == xLast && y == yLast
 	}
 
-	desCap := imgXYToSlicePos(xLast, yLast, i)
-	// fmt.Printf("dec: desCap=%3d\n", desCap)
+	lenExpected := imgXYToSlicePos(xLast, yLast, i)
 	stream := make(
 		[]byte,
-		desCap, // initial len
-		desCap, //capacity
+		lenExpected, // It allows inserting by index rather than using 'append'.
+		lenExpected, // Let's allocate the exact number of memory cells needed.
 	)
 
 	b := i.Bounds()
-	for x := b.Min.X; x < b.Max.X; x++ {
-		for y := b.Min.Y; y < b.Max.Y; y++ {
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
 			val := grayToByte(i.At(x, y))
 			sIdx := imgXYToSlicePos(x, y, i)
-			// fmt.Printf("dec: x=%3d, y=%3d, sIdx=%3d\n", x, y, sIdx)
 			if haveReachedLastPix(x, y) {
 				return stream, nil
 			}
-			if sIdx < desCap {
+			if sIdx < lenExpected {
 				stream[sIdx] = val
 			}
 		}
@@ -51,23 +48,24 @@ func calcLastPos(i *image.Gray) (int, int, error) {
 	xMax := b.Max.X - 1
 	yMin := b.Min.Y
 	yMax := b.Max.Y - 1
-	fillValue := grayToByte(i.At(xMax, yMax))
-	// fmt.Printf("fillValue=%4d, %T\n", fillValue, fillValue)
+
+	xPrev, yPrev, fillValue := xMax, yMax, grayToByte(i.At(xMax, yMax))
 	if fillValue != paddingEOT && fillValue != paddingETX {
 		err := fmt.Errorf("the last pixel is wild: %X", fillValue)
 		return intZeroVal, intZeroVal, err
 	}
+
 	for y := yMax; y >= yMin; y-- {
 		for x := xMax; x >= xMin; x-- {
 			colorAt := grayToByte(i.At(x, y))
-			// fmt.Printf("cLP: x=%5d, y=%5d, c=%3d, %T\n", x, y, colorAt, colorAt)
 			if colorAt != fillValue {
-				return x + 1, y, nil
+				return xPrev, yPrev, nil
 			}
+			xPrev, yPrev = x, y
 		}
 	}
 
-	return intZeroVal, intZeroVal, errors.New("I didn't find the end")
+	return intZeroVal, intZeroVal, errors.New("I didn't find the end") // Should not happen.
 }
 
 func calcStreamLen(i image.Image, xLast, yLast int) int {

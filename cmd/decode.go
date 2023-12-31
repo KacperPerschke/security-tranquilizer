@@ -50,8 +50,6 @@ func decodeFileFromPNG(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Printf("size of %s should be=%d\n", oFName, len(bOut))
-
 	errWrite := os.WriteFile(oFName, bOut, 0644)
 	if errWrite != nil {
 		return fmt.Errorf("Problem during attempt to write image to file '%s': %w", oFName, errWrite)

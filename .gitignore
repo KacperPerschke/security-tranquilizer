@@ -20,3 +20,6 @@ security-tranquilizer
 
 # Go workspace file
 go.work
+
+# Vim Your friend is.
+*.swp

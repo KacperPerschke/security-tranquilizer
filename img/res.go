@@ -45,8 +45,16 @@ var prefSizes = []CDS{
 		Height: 1,
 	},
 	CDS{ // for tests
+		Width:  12,
+		Height: 2,
+	},
+	CDS{ // for tests
 		Width:  8,
 		Height: 4,
+	},
+	CDS{ // for tests
+		Width:  13,
+		Height: 3,
 	},
 	CDS{ // for tests
 		Width:  32,
