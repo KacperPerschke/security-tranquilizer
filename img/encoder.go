@@ -7,9 +7,9 @@ import (
 )
 
 func PackToImg(stream []byte) (*image.Gray, error) {
-	sLength := len(stream)
+	sLen := len(stream)
 
-	rect, err := resBySize(sLength)
+	rect, err := resBySize(sLen)
 	if err != nil {
 		return emptyImage, fmt.Errorf("problem while guessing suitable image size: %w", err)
 	}
@@ -18,14 +18,14 @@ func PackToImg(stream []byte) (*image.Gray, error) {
 	paddingVal := fillerContent(stream)
 	calcPixColToSet := func(x, y int) color.Gray {
 		sIdx := imgXYToSlicePos(x, y, img)
-		if sIdx < sLength {
+		if sIdx < sLen {
 			return newGray(stream[sIdx])
 		}
 		return newGray(paddingVal)
 	}
 	b := img.Bounds()
-	for x := b.Min.X; x < b.Max.X; x++ {
-		for y := b.Min.Y; y < b.Max.Y; y++ {
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
 			colToSet := calcPixColToSet(x, y)
 			img.SetGray(x, y, colToSet)
 		}
