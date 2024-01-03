@@ -11,7 +11,7 @@ import (
 )
 
 var decodeCmd = &cobra.Command{
-	Use:   "decode",
+	Use:   "decode [flags] IMAGE_USED_AS_TRANSPORT",
 	Short: "Your friendly decoder",
 	Long:  "Decodes the contents of the given image as described in the Readme.\nThe name of a file to be decoded is given as an argument to the call.",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
