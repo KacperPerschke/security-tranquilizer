@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"image/png"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 
-	"github.com/KacperPerschke/security-tranquilizer/img"
+	"github.com/KacperPerschke/security-tranquilizer/common"
+	"github.com/KacperPerschke/security-tranquilizer/encoder"
 )
 
 var encodeCmd = &cobra.Command{
@@ -18,51 +19,83 @@ var encodeCmd = &cobra.Command{
 		return checkArgsCount(args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := encodeFileToPNG(cmd, args)
+		outFileName, inList, err := procCmdArgs(cmd, args)
 		if err != nil {
-			fmt.Printf("\nThere was an error while encoding: %q\n\n", err)
+			fmt.Printf("\nThere was an with command line args: %q\n\n", err.Error())
+			os.Exit(1)
+		}
+		if err := encoder.EncodeFileToPNG(outFileName, inList); err != nil {
+			fmt.Printf("\nThere was an error while encoding: %q\n\n", err.Error())
 			os.Exit(1)
 		}
 	},
 }
 
+const (
+	optOutFname        = "output"
+	optOutFnameShort   = "o"
+	timeFmtForFilename = "2006-01-02_15:04:05"
+)
+
+var outFileName string
+
 func init() {
 	rootCmd.AddCommand(encodeCmd)
 	addOutputFlag(encodeCmd)
-	// Reminder — here you can define your flags and configuration settings.
+	encodeCmd.Flags().StringVarP(
+		&outFileName,
+		optOutFname,
+		optOutFnameShort,
+		fmt.Sprintf(
+			"st_%s.png",
+			time.Now().Format(timeFmtForFilename),
+		),
+		"name of output file",
+	)
 }
 
-func encodeFileToPNG(c *cobra.Command, args []string) error {
-	iFName := args[0]
-	oFName, err := getOutFileName(c)
+func procCmdArgs(cmd *cobra.Command, args []string) (string, []common.FileInfo, error) {
+	emptyIL := []common.FileInfo{}
+	oFN, err := cmd.Flags().GetString(optOutFname)
 	if err != nil {
-		return fmt.Errorf("Problem during attempt to get value of `output` flag: %w", err)
+		return "", emptyIL, fmt.Errorf(
+			"the ‘%s’ argument could not be extracted",
+			optOutFname,
+		)
 	}
-
-	b, err := os.ReadFile(iFName)
+	if err := common.FSCanCreate(oFN); err != nil {
+		return "", emptyIL, err
+	}
+	il, err := procIL(args)
 	if err != nil {
-		return fmt.Errorf("Problem during attempt to read file '%s': %w", iFName, err)
+		return "", emptyIL, err
 	}
+	return oFN, il, err
+}
 
-	img, err := img.PackToImg(b)
-	if err != nil {
-		return err
+func procIL(al []string) ([]common.FileInfo, error) {
+	intermediateIL := []common.FileInfo{}
+	for _, el := range al {
+		elPrep, err := common.FSPrepElI(el)
+		if err != nil {
+			return []common.FileInfo{}, err
+		}
+		intermediateIL = append(
+			intermediateIL,
+			elPrep,
+		)
 	}
-
-	oHandle, err := os.OpenFile(oFName, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
-	if err != nil {
-		return fmt.Errorf("Problem during attempt to open file '%s' for writing: %w", oFName, err)
+	il := []common.FileInfo{}
+	for _, prepEl := range intermediateIL {
+		if prepEl.IsFileOrSymlink() {
+			il = append(il, prepEl)
+			continue
+		}
+		return []common.FileInfo{}, fmt.Errorf(
+			"‘%s’ is not a file nor symlink",
+			prepEl.Path,
+		)
 	}
+	return il, nil
 
-	errPNG := png.Encode(oHandle, img)
-	if errPNG != nil {
-		return fmt.Errorf("Problem during attempt to write image to file '%s': %w", oFName, errPNG)
-	}
-
-	errClose := oHandle.Close()
-	if err != nil {
-		return fmt.Errorf("Problem during releasing handle to file '%s' after write: %w", oFName, errClose)
-	}
-
-	return nil
 }

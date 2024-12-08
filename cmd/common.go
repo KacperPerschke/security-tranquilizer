@@ -11,8 +11,8 @@ const (
 )
 
 var (
-	errTooFewArgs  = errors.New("You haven't provided a single argument.")
-	errTooManyArgs = errors.New("You haven provided too many arguments.")
+	errTooFewArgs  = errors.New("You have provided too few arguments.")
+	errTooManyArgs = errors.New("You have provided too many arguments.")
 )
 
 func addOutputFlag(c *cobra.Command) {

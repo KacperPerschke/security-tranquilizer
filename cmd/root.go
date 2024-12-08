@@ -13,7 +13,6 @@ var (
 		Long:  `Plase read the Readme ( https://github.com/KacperPerschke/security-tranquilizer/blob/main/README.md )`,
 		// Run: Intentioanlly empty
 	}
-	outFileName = ``
 )
 
 func Execute() {
