@@ -1,13 +1,35 @@
 package img
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"image"
 	"image/color"
+	"image/draw"
+
+	"github.com/KacperPerschke/security-tranquilizer/archiver"
 )
 
-func UnpackFromImg(i *image.Gray) ([]byte, error) {
+func DecodeFromPNG(path string) error {
+	imgRead, err := ReadFromPNG(path)
+	if err != nil {
+		return err
+	}
+	imgGray := image.NewGray(imgRead.Bounds())
+	draw.Draw(imgGray, imgGray.Bounds(), imgRead, imgRead.Bounds().Min, draw.Src)
+	bOut, err := bytesFromImg(imgGray)
+	if err != nil {
+		return err
+	}
+
+	if err := archiver.UnpackFrom(bytes.NewReader(bOut)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func bytesFromImg(i *image.Gray) ([]byte, error) {
 	emptyStream := make([]byte, 0, 0)
 
 	xLast, yLast, err := calcLastPos(i)

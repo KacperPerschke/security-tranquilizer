@@ -38,6 +38,20 @@ func FSCanCreate(fp string) error {
 	return nil
 }
 
+func FSExistsAsFile(path string) error {
+	info, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	if info.IsDir() {
+		return fmt.Errorf(
+			"‘%s’ is a directory, not a file",
+			path,
+		)
+	}
+	return nil
+}
+
 const pathUP = ".."
 
 func FSPrepElI(el string) (FileInfo, error) {

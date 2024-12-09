@@ -8,8 +8,8 @@ import (
 
 func TestBasic(t *testing.T) {
 	in := `Katz`
-	img, _ := PackToImg([]byte(in))
-	b, _ := UnpackFromImg(img)
+	img, _ := bytesToImg([]byte(in))
+	b, _ := bytesFromImg(img)
 	out := string(b)
 	if out != in {
 		t.Fatalf(`TestBasic: want %#q and got %#q`, in, out)
@@ -40,11 +40,11 @@ func TestIncreasingSize(t *testing.T) {
 		for i := range in {
 			in[i] = charset[seededRand.Intn(len(charset))]
 		}
-		img, err := PackToImg(in)
+		img, err := bytesToImg(in)
 		if err != nil {
-			t.Fatalf(`TestIncreasingSize got err '%q' from PackToImg at size=%5d`, err, size)
+			t.Fatalf(`TestIncreasingSize got err '%q' from bytesToImg at size=%5d`, err, size)
 		}
-		out, err := UnpackFromImg(img)
+		out, err := bytesFromImg(img)
 		if err != nil {
 			t.Fatalf(`TestIncreasingSize got err '%q' from UnpackFromImg at size=%5d`, err, size)
 		}

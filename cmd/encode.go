@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KacperPerschke/security-tranquilizer/common"
-	"github.com/KacperPerschke/security-tranquilizer/encoder"
+	"github.com/KacperPerschke/security-tranquilizer/img"
 )
 
 var encodeCmd = &cobra.Command{
@@ -24,7 +24,7 @@ var encodeCmd = &cobra.Command{
 			fmt.Printf("\nThere was a problem with command line arg: %s\n\n", err.Error())
 			os.Exit(1)
 		}
-		if err := encoder.EncodeToPNG(outFileName, inList); err != nil {
+		if err := img.EncodeToPNG(outFileName, inList); err != nil {
 			fmt.Printf("\nThere was an error while encoding: %q\n\n", err.Error())
 			os.Exit(1)
 		}
