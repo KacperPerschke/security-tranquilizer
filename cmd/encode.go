@@ -16,15 +16,15 @@ var encodeCmd = &cobra.Command{
 	Short: "Your friendly encoder",
 	Long:  "Encodes the contents of the given file as described in the Readme.\nThe name of a file to be encoded is given as an argument to the call.",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		return checkArgsCount(args)
+		return checkArgsCountMin(args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		outFileName, inList, err := procCmdArgs(cmd, args)
 		if err != nil {
-			fmt.Printf("\nThere was an with command line args: %q\n\n", err.Error())
+			fmt.Printf("\nThere was a problem with command line arg: %s\n\n", err.Error())
 			os.Exit(1)
 		}
-		if err := encoder.EncodeFileToPNG(outFileName, inList); err != nil {
+		if err := encoder.EncodeToPNG(outFileName, inList); err != nil {
 			fmt.Printf("\nThere was an error while encoding: %q\n\n", err.Error())
 			os.Exit(1)
 		}
@@ -41,7 +41,6 @@ var outFileName string
 
 func init() {
 	rootCmd.AddCommand(encodeCmd)
-	addOutputFlag(encodeCmd)
 	encodeCmd.Flags().StringVarP(
 		&outFileName,
 		optOutFname,
@@ -87,7 +86,7 @@ func procIL(al []string) ([]common.FileInfo, error) {
 	}
 	il := []common.FileInfo{}
 	for _, prepEl := range intermediateIL {
-		if prepEl.IsFileOrSymlink() {
+		if prepEl.AppearsToBeFile() {
 			il = append(il, prepEl)
 			continue
 		}

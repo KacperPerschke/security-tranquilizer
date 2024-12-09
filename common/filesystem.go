@@ -49,7 +49,11 @@ func FSPrepElI(el string) (FileInfo, error) {
 	if err != nil {
 		return FileInfo{}, err
 	}
-	rel, err := filepath.Rel(cwd, el)
+	abs, err := filepath.Abs(el)
+	if err != nil {
+		return FileInfo{}, err
+	}
+	rel, err := filepath.Rel(cwd, abs)
 	if err != nil {
 		return FileInfo{}, err
 	}

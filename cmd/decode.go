@@ -15,7 +15,13 @@ var decodeCmd = &cobra.Command{
 	Short: "Your friendly decoder",
 	Long:  "Decodes the contents of the given image as described in the Readme.\nThe name of a file to be decoded is given as an argument to the call.",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		return checkArgsCount(args)
+		if err := checkArgsCountMin(args); err != nil {
+			return err
+		}
+		if err := checkArgsCountMax(args); err != nil {
+			return err
+		}
+		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		err := decodeFileFromPNG(cmd, args)

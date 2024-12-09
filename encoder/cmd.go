@@ -5,16 +5,19 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/KacperPerschke/security-tranquilizer/archiver"
 	"github.com/KacperPerschke/security-tranquilizer/common"
 	"github.com/KacperPerschke/security-tranquilizer/img"
 )
 
-func EncodeFileToPNG(of string, il []common.FileInfo) error {
-	iFName := il[0]
-
-	b, err := os.ReadFile(iFName.Path)
+func EncodeToPNG(of string, il []common.FileInfo) error {
+	b, err := archiver.PackToArchive(il)
 	if err != nil {
-		return fmt.Errorf("Problem during attempt to read file '%s': %w", iFName, err)
+		return err // Should we include more information?
+	}
+	wErr := os.WriteFile("check.tar.gz", b, 0644)
+	if wErr != nil {
+		return err
 	}
 
 	img, err := img.PackToImg(b)

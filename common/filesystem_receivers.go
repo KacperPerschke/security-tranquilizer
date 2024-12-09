@@ -1,14 +1,8 @@
 package common
 
-import "io/fs"
-
-func (el FileInfo) IsFileOrSymlink() bool {
-	mode := el.Info.Mode()
-	isSymlink := func() bool {
-		return mode&fs.ModeSymlink == 0
+func (el FileInfo) AppearsToBeFile() bool {
+	if el.Info.Mode().IsDir() {
+		return false
 	}
-	if mode.IsRegular() || isSymlink() {
-		return true
-	}
-	return false
+	return true
 }

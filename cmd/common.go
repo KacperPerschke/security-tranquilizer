@@ -20,16 +20,18 @@ func addOutputFlag(c *cobra.Command) {
 	c.MarkFlagRequired("output")
 }
 
-func checkArgsCount(a []string) error {
-	l := len(a)
-	switch {
-	case l == 0:
-		return errTooFewArgs
-	case l > 1:
+func checkArgsCountMax(a []string) error {
+	if len(a) > 1 {
 		return errTooManyArgs
-	default:
-		return nil
 	}
+	return nil
+}
+
+func checkArgsCountMin(a []string) error {
+	if len(a) == 0 {
+		return errTooFewArgs
+	}
+	return nil
 }
 
 func getOutFileName(c *cobra.Command) (string, error) {
